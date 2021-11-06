@@ -10,9 +10,6 @@ pr:
   - feature/*
   - bugfix/*
 
-pool:
-  vmImage: ubuntu-latest
-
 variables:
   - name: CONTAINER_REGISTRY_SERVICE_CONNECTION
     value: dockerRegistryServiceConnection
@@ -26,6 +23,7 @@ stages:
       - job: BUILD_APP
         workspace:
           clean: all
+        pool: $(POOL_LABEL)
         steps:
           - task: Bash@3
             displayName: Pre Build
