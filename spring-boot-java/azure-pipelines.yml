@@ -27,6 +27,13 @@ stages:
         workspace:
           clean: all
         steps:
+          - task: Bash@3
+            displayName: Pre Build
+            inputs:
+              targetType: 'inline'
+              script: |
+                cd spring-boot-java
+                ls -lt
           - task: Docker@2
             displayName: Build
             inputs:
