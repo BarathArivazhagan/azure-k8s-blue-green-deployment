@@ -112,7 +112,6 @@ services:
     port: 2000
 
   config_enabled: false
-  config_volumes_enabled: false
   hpa:
     enabled: true
     minReplicas: 1
@@ -150,15 +149,7 @@ securityContext:
 ingress:
   enabled: false
 
-tolerations:
-- effect: NoSchedule
-  key: platform
-  operator: Equal
-  value: apps
-- effect: NoSchedule
-  key: env
-  operator: Equal
-  value: dev
+tolerations: []
 
 
 serviceAccount:
@@ -166,22 +157,22 @@ serviceAccount:
    name: default
 
 affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: env
-          operator: In
-          values:
-          - dev
-    preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 1
-      preference:
-        matchExpressions:
-        - key: platform
-          operator: In
-          values:
-          - apps
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: env
+  #         operator: In
+  #         values:
+  #         - dev
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 1
+  #     preference:
+  #       matchExpressions:
+  #       - key: platform
+  #         operator: In
+  #         values:
+  #         - apps
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
     - weight: 100

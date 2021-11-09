@@ -33,7 +33,6 @@ services:
     type: $(service_type)
     port: $(service_port)
   config_enabled: $(config_enabled)
-  config_volumes_enabled: $(config_volumes_enabled)
   volumes:
   - name: $(configmap_name)
     configMap:
@@ -113,14 +112,6 @@ serviceAccount:
    name: default
 
 affinity:
-  nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: env
-          operator: In
-          values:
-          - $(env)
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
     - weight: 100
