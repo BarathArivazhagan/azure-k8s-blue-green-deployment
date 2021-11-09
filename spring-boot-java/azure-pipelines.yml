@@ -38,7 +38,9 @@ stages:
               command: build
               containerRegistry: $(CONTAINER_REGISTRY_SERVICE_CONNECTION)
               repository: $(REPOSITORY)
-              tags: $(TAG)
+              tags: |
+                $(TAG)
+                latest
           - task: Docker@2
             displayName: Junit Test
             inputs:
