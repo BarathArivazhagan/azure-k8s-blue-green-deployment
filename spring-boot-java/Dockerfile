@@ -1,7 +1,7 @@
 # Builder stage
 FROM maven:3.8.3-openjdk-11-slim AS builder
 WORKDIR /opt
-COPY . /opt
+COPY . /opt/
 RUN mvn clean install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
