@@ -92,6 +92,7 @@ variable "k8s_prefix" {
 
 variable "rbac_aad_admin_group_object_ids" {
   description = "Active Directory Group Admin Object IDs"
+  default     = []
 }
 
 
@@ -153,35 +154,17 @@ variable "k8s_node_pools" {
   }))
 }
 
-
-## Redis Variables
-
-variable "redis_name" {
-
-}
-
-variable "redis_capacity" {
-
-}
-
-variable "redis_family" {
-
-}
-
-variable "redis_sku_name" {
-
-}
-
-variable "redis_enable_non_ssl_port" {
-
-}
-
-variable "redis_minimum_tls_version" {
-
-}
-
 ### Application Gateway Variables
 
+variable "create_app_gw_subnet" {
+  type    = bool
+  default = true
+}
+
+variable "create_app_gw" {
+  default = true
+  type    = bool
+}
 variable "app_gw_name" {
 
 }
@@ -224,10 +207,14 @@ variable "net_profile_docker_bridge_cidr" {
   default = null
 }
 
-## Key Vault
+## ACR Variables
 
-variable "kv_name" {
-  description = "Key Vault to be used"
+variable "acr_name" {
+
+}
+
+variable "acr_sku" {
+
 }
 
 ## Common Tags

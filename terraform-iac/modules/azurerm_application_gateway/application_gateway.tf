@@ -6,26 +6,48 @@ locals {
   listener_name                  = join("-",[var.vnet_name,"httplstn"])
   request_routing_rule_name      = join("-",[var.vnet_name,"rqrt"])
   redirect_configuration_name    = join("-",[var.vnet_name,"rdrcfg"])
+  gw_subnet_name                 =  join("-",[var.app_gw_name,"subnet"])
+}
+
+data "azurerm_resource_group" "main" {
+  name = var.rg_name
+}
+
+
+data "azurerm_subnet" "app_gw_subnet" {
+  count = var.create_app_gw_subnet ? 0 : 1
+
+  name                 =  local.gw_subnet_name
+  resource_group_name  = data.azurerm_resource_group.main.name
+  virtual_network_name = var.vnet_name
 }
 
 resource "azurerm_subnet" "app_gw_subnet" {
-  name                 = "backend"
+
+  count   = var.create_app_gw_subnet ? 1 : 0
+
+  name                 = local.gw_subnet_name
   resource_group_name  = var.rg_name
   virtual_network_name = var.vnet_name
   address_prefixes     = [var.app_gw_subnet_cidr_block]
 }
 
+
 resource "azurerm_public_ip" "app_gw_frontend_ip" {
-  name                = var.app_gw_public_ip_name
-  resource_group_name = var.rg_name
-  location            = var.location
+  name                = local.frontend_ip_configuration_name
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
   allocation_method   = var.allocation_method
+  sku = var.public_ip_sku
 }
 
 resource "azurerm_application_gateway" "application_gateway" {
+
+  count = var.create_app_gw ? 1 : 0
+
   name                = var.app_gw_name
-  resource_group_name = var.rg_name
-  location            =  var.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = data.azurerm_resource_group.main.location
 
   sku {
     name     = var.app_gw_sku_name
@@ -35,7 +57,7 @@ resource "azurerm_application_gateway" "application_gateway" {
 
   gateway_ip_configuration {
     name      = join("-",[var.app_gw_name,var.app_gw_public_ip_name])
-    subnet_id = azurerm_subnet.app_gw_subnet.id
+    subnet_id = var.create_app_gw_subnet? azurerm_subnet.app_gw_subnet[count.index].id : data.azurerm_subnet.app_gw_subnet[count.index].id
   }
 
   frontend_port {
@@ -44,7 +66,7 @@ resource "azurerm_application_gateway" "application_gateway" {
   }
 
   frontend_ip_configuration {
-    name                 = join("-",[var.app_gw_public_ip_name,"configuration"])
+    name                 =  local.frontend_ip_configuration_name
     public_ip_address_id = azurerm_public_ip.app_gw_frontend_ip.id
   }
 
@@ -63,7 +85,7 @@ resource "azurerm_application_gateway" "application_gateway" {
 
   http_listener {
     name                           = local.listener_name
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_ip_configuration_name = azurerm_public_ip.app_gw_frontend_ip.name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Http"
   }
@@ -75,4 +97,6 @@ resource "azurerm_application_gateway" "application_gateway" {
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
   }
+
+  depends_on = [azurerm_public_ip.app_gw_frontend_ip]
 }

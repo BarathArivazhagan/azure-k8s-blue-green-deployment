@@ -32,8 +32,8 @@ choose the branch based on below maintained versions.
 
 - Setup Terraform backend based of Azure Storage Account
 ```
-RESOURCE_GROUP_NAME="demo-production"
-STORAGE_ACCOUNT_NAME="terraformstate"
+export RESOURCE_GROUP_NAME="demo-terraform-state"
+export STORAGE_ACCOUNT_NAME="terraformstatebarath2022"
 ACCOUNT_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --query '[0].value' -o tsv)
 export ARM_ACCESS_KEY=$ACCOUNT_KEY
 ```
@@ -44,25 +44,31 @@ export ARM_ACCESS_KEY=$ACCOUNT_KEY
 $ terraform init
 ```
 
-- Prepare the terraform values file [eastus.tfvars](eastus.tfvars)
+- Prepare the terraform values file [westus2.tfvars](westus2.tfvars)
     
   This contains the values to the variables to be considered that includes resource group, location etc.
 
 - Plan the infrastructure
 
 ```
-$ terraform plan --var-file=eastus2.tfvars --out eastus2
+$ terraform plan --var-file=westus22.tfvars --out westus22
 ```
 
 - Apply the infrastructure
 
 ```
-$ terraform apply eastus2
+$ terraform apply westus22
 ```
 
 - Delete the infrastructure (Handle with care)
 
 ```
-$ terraform destroy --var-file=eastus2.tfvars
+$ terraform destroy --var-file=westus22.tfvars
 ```
 
+Notes:
+
+az feature register --namespace "Microsoft.Compute" --name "EncryptionAtHost"
+
+
+az feature list -o table --query "[?contains(name, 'Microsoft.Compute/EncryptionAtHost')].{Name:name,State:properties.state}"

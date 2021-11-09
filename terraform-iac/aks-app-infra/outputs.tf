@@ -6,10 +6,6 @@ output "resource_group_location" {
   value = module.resource_group.rg_location
 }
 
-output "redis_hostname" {
-  value = module.redis.redis_hostname
-}
-
 output "kubernetes_cluster_name" {
   value = module.aks.k8s_cluster_name
 }

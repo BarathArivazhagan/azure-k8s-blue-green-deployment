@@ -9,7 +9,7 @@ locals {
 }
 
 module "resource_group" {
-  source   = "./modules/resource_group"
+  source   = "../modules/resource_group"
   location = var.location
   rg_name  = var.rg_name
   tags     = var.common_tags
@@ -27,8 +27,19 @@ module "virtual_network" {
   depends_on = [module.resource_group]
 }
 
+
+module "acr" {
+  source              = "../modules/azure_acr"
+  acr_name            = var.acr_name
+  resource_group_name = module.resource_group.rg_name
+  sku                 = var.acr_sku
+  tags                = local.common_tags
+
+  depends_on = [module.resource_group, module.virtual_network]
+
+}
 module "aks" {
-  source                           = "./modules/azure_aks"
+  source                           = "../modules/azure_aks"
   resource_group_name              = module.resource_group.rg_name
   kubernetes_version               = var.k8s_cluster_version
   orchestrator_version             = var.k8s_cluster_version
@@ -59,42 +70,23 @@ module "aks" {
   net_profile_pod_cidr           = var.net_profile_pod_cidr
   net_profile_service_cidr       = var.net_profile_service_cidr
 
-  depends_on = [module.virtual_network]
+  depends_on = [module.resource_group, module.virtual_network]
 }
 
-module "redis" {
-  source              = "./modules/azure_redis"
-  name                = var.redis_name
-  rg_name             = var.rg_name
-  location            = var.location
-  capacity            = var.redis_capacity
-  family              = var.redis_family
-  sku_name            = var.redis_sku_name
-  enable_non_ssl_port = var.redis_enable_non_ssl_port
-  minimum_tls_version = var.redis_minimum_tls_version
-  tags                = var.common_tags
-  depends_on          = [module.resource_group]
-}
 
 module "application_gateway" {
-  source                   = "./modules/azurerm_application_gateway"
+  source                   = "../modules/azurerm_application_gateway"
   location                 = var.location
   rg_name                  = var.rg_name
   vnet_name                = var.vnet_name
+  create_app_gw            = var.create_app_gw
+  create_app_gw_subnet     = var.create_app_gw_subnet
   app_gw_name              = var.app_gw_name
   app_gw_public_ip_name    = var.app_gw_public_ip_name
   app_gw_subnet_cidr_block = var.app_gw_subnet_cidr_block
   app_gw_sku_tier          = var.app_gw_sku_tier
   app_gw_capacity          = var.app_gw_capacity
   app_gw_sku_name          = var.app_gw_sku_name
-  depends_on               = [module.resource_group]
-}
 
-module "key_vault" {
-  source              = "./modules/azure_keyvault"
-  kv_name             = var.kv_name
-  location            = var.location
-  resource_group_name = var.rg_name
-  tags                = local.common_tags
-  depends_on          = [module.resource_group]
+  depends_on = [module.resource_group, module.virtual_network]
 }

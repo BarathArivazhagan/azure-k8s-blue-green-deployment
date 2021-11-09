@@ -125,7 +125,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks_node_pool" {
   enable_host_encryption = each.value.enable_host_encryption
   availability_zones     = each.value.availability_zones
   mode                   = each.value.mode
-  node_taints            = each.value.node_taints
   node_labels            = each.value.node_labels
   orchestrator_version   = var.kubernetes_version
   os_disk_size_gb        = each.value.os_disk_size_gb
