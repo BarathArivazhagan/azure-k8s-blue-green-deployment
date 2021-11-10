@@ -40,6 +40,7 @@ module "vmss" {
   azp_agent_name         = var.azp_agent_name
   azp_pat                = var.azp_pat
   azp_url                = var.azp_url
+  file_uris              = var.file_uris
   vmss_extension_enabled = var.vmss_extension_enabled
 
   depends_on = [module.resource_group, module.virtual_network]

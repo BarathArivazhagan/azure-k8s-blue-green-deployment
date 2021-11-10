@@ -33,6 +33,15 @@ variable "azp_pat" {
 variable "azp_agent_name" {
   default = ""
 }
+
+variable "single_placement_group" {
+  default = false
+}
+
+variable "overprovision" {
+  default = false
+}
+
 variable "tags" {}
 
 variable "admin_username" {}
