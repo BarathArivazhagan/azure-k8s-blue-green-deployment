@@ -12,7 +12,7 @@ USER app-user
 ARG DEPENDENCY=/opt/target/dependency
 ENV JAVA_OPTS=""
 WORKDIR /app
-COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=builder  ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=builder  ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["sh","-c","java $JAVA_OPTS -cp app:app/lib/* com.demo.app.Application"]
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib lib
+COPY --from=builder  ${DEPENDENCY}/META-INF META-INF
+COPY --from=builder  ${DEPENDENCY}/BOOT-INF/classes .
+ENTRYPOINT ["sh","-c","java $JAVA_OPTS -cp /app:/app/lib/* com.demo.app.Application"]
